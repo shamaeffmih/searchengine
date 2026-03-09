@@ -32,10 +32,6 @@ public class HashSetPages {
         setUrls.removeIf(x -> x.startsWith(homePage));
     }
 
-    public void clear() {
-        HashSetPages.setUrls.clear();
-    }
-
     public int size() {
         return setUrls.size();
     }

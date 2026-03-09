@@ -36,7 +36,6 @@ public class IndexPageServiceIml implements IndexPageService {
     private final IndexRepository indexRepository;
     @Autowired
     private final SitesList sites = new SitesList();
-    private PageEntity pageEntity;
     private String urlSite;
     private String urlPage;
     private SiteEntity siteId;
@@ -81,40 +80,10 @@ public class IndexPageServiceIml implements IndexPageService {
         return response;
     }
 
-//    private void handlerLemmaAndIndex() {
-//        LemmaFinder lemmaFinder = getLemmaFinder();
-//        try {
-//            lemmaFinder = LemmaFinder.getInstance();
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//        String cleanPage = lemmaFinder.cleanUpCodePage(pageEntity);
-//        for (Map.Entry<String, Integer> entry : lemmaFinder.collectLemmas(cleanPage).entrySet()) {
-//            String lemma = entry.getKey();
-//            Integer lemmasCount = entry.getValue();
-//            if (!lemmaRepository.existsByLemmaAndSiteId(lemma, siteId)) {
-//                LemmaEntity lemmaEntity = setLemmaEntity(lemma);
-//                lemmaId = lemmaRepository.getReferenceById(lemmaEntity.getId());
-//            } else {
-//                LemmaEntity lemmaEntity = lemmaRepository.findByLemmaAndSiteId(lemma, siteId);
-//                int frequency = lemmaEntity.getFrequency();
-//                lemmaEntity.setFrequency(++frequency);
-//                lemmaRepository.save(lemmaEntity);
-//                lemmaId = lemmaRepository.getReferenceById(lemmaEntity.getId());
-//            }
-//            if (!indexRepository.existsByLemmaIdAndPageId(lemmaId, pageId)) {
-//                setIndexEntity(lemmasCount);
-//            } else {
-//                IndexEntity indexEntity = indexRepository.findByLemmaIdAndPageId(lemmaId, pageId);
-//                indexEntity.setRank(lemmasCount);
-//                indexRepository.save(indexEntity);
-//            }
-//        }
-//    }
 
     private void handlerLemmaAndIndex() {
         LemmaFinder lemmaFinder = getLemmaFinder();
-        String cleanPage = lemmaFinder.cleanUpCodePage(pageEntity);
+        String cleanPage = lemmaFinder.cleanUpCodePage(pageId);
 
         for (Map.Entry<String, Integer> entry : lemmaFinder.collectLemmas(cleanPage).entrySet()) {
             String lemma = entry.getKey();
@@ -124,6 +93,7 @@ public class IndexPageServiceIml implements IndexPageService {
             processIndex(lemmaId, pageId, lemmasCount);
         }
     }
+
     private LemmaFinder getLemmaFinder() {
         try {
             return LemmaFinder.getInstance();
@@ -131,6 +101,7 @@ public class IndexPageServiceIml implements IndexPageService {
             throw new RuntimeException(e);
         }
     }
+
     private int getLemmaIdAndSaveLemma(String lemma, SiteEntity siteId) {
         if (!lemmaRepository.existsByLemmaAndSiteId(lemma, siteId)) {
             LemmaEntity lemmaEntity = setLemmaEntity(lemma);
@@ -190,7 +161,7 @@ public class IndexPageServiceIml implements IndexPageService {
 
     private void removingIfPathAndSiteExists(SiteEntity siteEntity) {
         if (pageRepository.existsByPathAndSiteId(urlPage, siteId)) {
-            pageEntity = pageRepository.findByPathAndSiteId(urlPage, siteId);
+            PageEntity pageEntity = pageRepository.findByPathAndSiteId(urlPage, siteId);
             pageRepository.deleteById(pageEntity.getId());
 
             List<SiteEntity> ListSitesId = siteRepository.findAllById(siteEntity.getId());

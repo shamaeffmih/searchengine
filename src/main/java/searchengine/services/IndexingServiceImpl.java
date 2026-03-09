@@ -40,46 +40,6 @@ public class IndexingServiceImpl implements IndexingService {
 
     private final InterrupterPool interrupterPool = new InterrupterPool();
 
-    //    @Override
-//    public IndexingResponse startIndexing() {
-//        IndexingResponse response = new IndexingResponse();
-//        if (interrupterPool.isStop()) {
-//            response.setResult(true);
-//            interrupterPool.setStop(false);
-//        } else {
-//            response.setError("Индексация уже запущена");
-//            response.setResult(false);
-//            return response;
-//        }
-//        removingDataFromPreviousIndexing();
-//        List<Site> sitesList = sites.getSites();
-//        Set<SiteEntity> hashSetSiteEntities = new HashSet<>();
-//        for (Site site : sitesList) {
-//            saveIndexingSiteEntity(site);
-//            hashSetSiteEntities.add(siteEntity);
-//            ExceptionHandlers exceptionHandlers = new ExceptionHandlers(siteEntity, siteRepository);
-//            try {
-//                Jsoup.connect(site.getUrl()).userAgent(UserAgents.getUserAgent()).maxBodySize(0).get();
-//            } catch (HttpStatusException eh) {
-//                exceptionHandlers.handleHttpStatusException(eh);
-//                continue;
-//            } catch (SocketTimeoutException es) {
-//                exceptionHandlers.handleTimeoutException(es);
-//                continue;
-//            } catch (IOException ei) {
-//                exceptionHandlers.handleIOException(ei);
-//                continue;
-//            } catch (Exception e) {
-//                exceptionHandlers.handleGeneralException(e);
-//                continue;
-//            }
-//            Link rootLink = new Link(site.getUrl());
-//            RecursiveSiteLink recursiveSiteLink = new RecursiveSiteLink(rootLink, parserSettings, siteRepository, pageRepository, lemmaRepository, indexRepository, siteEntity, interrupterPool, hashSetPages);
-//            PoolInvokeInThread poolInvokeInThreads = new PoolInvokeInThread(recursiveSiteLink, hashSetSiteEntities, site, siteRepository);
-//            new Thread(poolInvokeInThreads).start();
-//        }
-//        return response;
-//    }
     @Override
     public IndexingResponse startIndexing() {
         IndexingResponse response = new IndexingResponse();

@@ -21,7 +21,7 @@ public class Link {
     }
 
     public void addChildren(Link element) {
-        if (!children.contains(element)) {   // TODO ? Можно убрать проверку, т.к. она проходит в RecursiveSiteLink
+        if (!children.contains(element)) {
             children.add(element);
         }
     }

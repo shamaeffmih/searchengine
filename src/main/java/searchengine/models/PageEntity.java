@@ -9,7 +9,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Getter
 @Setter
 @Entity
-@Table(name = "pages", indexes = @Index(name = "idx_pages_path", columnList = "path, site_id", unique = true)) //todo переделать индекс на "path"
+@Table(name = "pages", indexes = @Index(name = "idx_pages_path", columnList = "path, site_id", unique = true))
 public class PageEntity {
 
     @Id
@@ -19,7 +19,7 @@ public class PageEntity {
     @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(foreignKey = @ForeignKey(name = "site_page_FK"), columnDefinition = "Integer",
-            referencedColumnName = "id", name = "site_id", nullable = false, updatable = false) //todo может убрать этот индекс?
+            referencedColumnName = "id", name = "site_id", nullable = false, updatable = false)
     private SiteEntity siteId;
 
     @Column(columnDefinition = "VARCHAR(768) CHARACTER SET utf8", nullable = false)

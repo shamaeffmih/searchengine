@@ -2,15 +2,11 @@ package searchengine.utils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.server.ResponseStatusException;
 import searchengine.config.ParserSettings;
 import searchengine.models.IndexEntity;
 import searchengine.models.LemmaEntity;
@@ -23,12 +19,9 @@ import searchengine.repository.PageRepository;
 import searchengine.repository.SiteRepository;
 
 import java.io.IOException;
-import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.RecursiveTask;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Pattern;
 
 import static java.lang.Thread.sleep;
@@ -46,92 +39,11 @@ public class RecursiveSiteLink extends RecursiveTask<List<String>> {
     private final SiteEntity siteEntity;
     private LemmaEntity lemmaEntity;
     private IndexEntity indexEntity;
-    private LemmaFinder lemmaFinder;
 
     private final InterrupterPool interrupterPool;
     private final Pattern extensions = Pattern.compile(".*(\\.(css|js|xml|gif|jpg|jpeg|fig|png|mp3|mp4|avi|zip|gz|pdf|doc|docx|xls|xlsx|txt|eps|webp|dat|nc))$");
     public static int count = 0;
     private final HashSetPages hashSetPages;
-//    private final HashSetPagesEntity hashSetPagesEntity;
-//    private ArrayList<String> linkString;
-//    private final ReadWriteLock lock = new ReentrantReadWriteLock();
-//    String siteUrlWithoutSlash;
-
-//    @Override
-//    @Transactional
-//    public List<String> compute() {
-//        String url = link.getLinkString();
-//        String childLink;
-//        String pathPage = "";
-//        log.info("url - " + url);
-//        SiteEntity siteId;
-//        try {
-//            Document doc = loadDocumentFromURL(url);
-//            Elements elements = doc.select("a[href]");
-////            if (elements.isEmpty()){
-////                return Collections.emptyList();
-////            }
-//            for (Element element : elements) {
-//                if (interrupterPool.isStop()) {
-//                    setAndSaveStatusInterruptFromUser();
-//                    link.isEmptyLink();
-//                    break;
-//                }
-//                interrupterPool.setStop(false);
-//
-//                childLink = element.attr("abs:href").toLowerCase();
-////                if (childLink.isEmpty()){
-////                    return Collections.emptyList();
-////                }
-//                String siteUrlWithoutSlash = siteEntity.getUrl().substring(0, siteEntity.getUrl().length() - 1); //TODO Может вывести за compute() &?
-//
-//                if (childLink.startsWith(siteUrlWithoutSlash)) {
-//                    pathPage = childLink.substring(siteUrlWithoutSlash.length());
-//                    siteId = siteRepository.getReferenceById(siteEntity.getId());
-//                    if (pageRepository.existsByPathAndSiteId(pathPage, siteId)){
-//                        link.removeChildren(link);
-//                        continue;
-//                    }
-//                } else {
-//                    continue;
-//                }
-//                if (childLink.startsWith(siteUrlWithoutSlash)
-//                        && hashSetPages.NotContainsObject(childLink)
-//                        && !extensions.matcher(childLink).find()
-//                        && !childLink.contains("?") && !childLink.contains("#")
-//                ) {
-//                    hashSetPages.addObject(childLink);
-//                    count++;
-//                    log.info("childLink - " + childLink);
-//                    link.addChildren(new Link(childLink));
-//                    siteEntity.setStatusTime(LocalDateTime.now());
-//                    siteRepository.save(siteEntity);
-//                    Document documentPage = loadDocumentFromURL(childLink);
-//                    int responseStatusCode = documentPage.connection().response().statusCode();
-//                    String content = documentPage.html();
-//
-//                    PageEntity pageEntity = new PageEntity();
-//                    setPageEntityFields(pageEntity, siteId, content, responseStatusCode, pathPage);
-//                    PageEntity pageId;
-//                    if (!pageRepository.existsByPathAndSiteId(pathPage, siteId)) {
-//                        pageRepository.save(pageEntity);
-//                        pageId = pageRepository.getReferenceById(pageEntity.getId());
-//                    } else {
-//                        continue;
-//                    }
-//                    saveLemmaEntityAndIndexEntity(siteId, pageId, pageEntity);
-//                }
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        try {
-//            sleep(5000);
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
-//        return forkJoinTasks();
-//    }
 
     @Override
     @Transactional
@@ -150,7 +62,7 @@ public class RecursiveSiteLink extends RecursiveTask<List<String>> {
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        sleepSafely();
+        sleepSafely();
         return forkJoinTasks();
     }
 
@@ -278,33 +190,6 @@ public class RecursiveSiteLink extends RecursiveTask<List<String>> {
         return linkString;
     }
 
-//    private void saveLemmaEntityAndIndexEntity(SiteEntity siteId, PageEntity pageId, PageEntity pageEntity) throws IOException {
-//        lemmaFinder = LemmaFinder.getInstance();
-//        String cleanPage = lemmaFinder.cleanUpCodePage(pageEntity);
-//        for (Map.Entry<String, Integer> entry : lemmaFinder.collectLemmas(cleanPage).entrySet()) {
-//            String lemma = entry.getKey();
-//            Integer lemmasCount = entry.getValue();
-//
-//            if (!lemmaRepository.existsByLemmaAndSiteId(lemma, siteId)) {
-//                setNewLemmaEntityFields(lemma, siteId);
-//            } else {
-//                lemmaEntity = lemmaRepository.findByLemmaAndSiteId(lemma, siteId);
-//                int frequency = lemmaEntity.getFrequency();
-//                lemmaEntity.setFrequency(++frequency);
-//            }
-//            lemmaRepository.saveAndFlush(lemmaEntity);
-//            LemmaEntity lemmaId = lemmaRepository.getReferenceById(lemmaEntity.getId());
-//
-//            if (!indexRepository.existsByLemmaIdAndPageId(lemmaId, pageId)) {
-//                setNewIndexEntityFields(lemmaId, pageId);
-//            } else {
-//                indexEntity = indexRepository.findByLemmaIdAndPageId(lemmaId, pageId);
-//            }
-//            indexEntity.setRank(lemmasCount);
-//            indexRepository.saveAndFlush(indexEntity);
-//        }
-//    }
-
     private void saveLemmaEntity(SiteEntity siteId, String lemma) {
         if (!lemmaRepository.existsByLemmaAndSiteId(lemma, siteId)) {
             setNewLemmaEntityFields(lemma, siteId);
@@ -325,7 +210,7 @@ public class RecursiveSiteLink extends RecursiveTask<List<String>> {
         indexRepository.saveAndFlush(indexEntity);
     }
     private void saveLemmaEntityAndIndexEntity(SiteEntity siteId, PageEntity pageId, PageEntity pageEntity) throws IOException {
-        lemmaFinder = LemmaFinder.getInstance();
+        LemmaFinder lemmaFinder = LemmaFinder.getInstance();
         String cleanPage = lemmaFinder.cleanUpCodePage(pageEntity);
 
         for (Map.Entry<String, Integer> entry : lemmaFinder.collectLemmas(cleanPage).entrySet()) {

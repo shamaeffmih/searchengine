@@ -53,7 +53,7 @@ public class SearchServiceImpl implements SearchService {
 
     @Autowired
     private final SitesList sites = new SitesList();
-    protected static final int TOO_MANY_PAGES = 1000;
+    protected static final int TOO_MANY_PAGES = 3000;
     private static final int LENGTH_PHRASE = 230;
     List<SearchData> totalData;
     Map<Integer, Integer> mapPositionAndLengthWord = new TreeMap<>();
