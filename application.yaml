@@ -1,0 +1,53 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    username: root
+    password: Rbkbvfyl;fhj2
+    url: jdbc:mysql://localhost:3306/search_engine?useSSL=false&requireSSL=false&allowPublicKeyRetrieval=true
+  jpa:
+    properties:
+      hibernate:
+#        globally_quoted_identifiers: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        enable_lazy_load_no_trans: true
+        event:
+          merge:
+            entity_copy_observer: allow
+    hibernate:
+      ddl-auto: update #create-drop #update #create-only
+    show-sql: false
+
+jsoup-settings:
+  userAgent: Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html);
+  referrer: https://www.google.com
+  timeout: 5000
+  ignoreContentType: true
+  ignoreHttpErrors: true
+  followRedirects: true
+
+indexing-settings:
+  sites:
+    - url: https://tchaikovskyhome.ru/
+      name: Музей П. И. Чайковского
+    - url: https://www.playback.ru/
+      name: Плей Бэк
+    - url: https://radiomv.ru/
+      name: Милицейское радио
+    - url: https://www.ipfran.ru/
+      name: Ипфран
+    - url: https://nikoartgallery.com/
+      name: Галерея Н.Б. Никогосяна
+    - url: https://et-cetera.ru/
+      name: Ет-сетера
+    - url: https://lutherancathedral.com/
+      name: Лютеранский Кафедральный Собор
+    - url: https://dombulgakova.ru/
+      name: Дом М.А. Булгакова
+    - url: https://www.svetlovka.ru/
+      name: Светловка
+    - url: https://tchaikovsky.house/
+      name: Музей-заповедник П. И. Чайковского
+#    - url: https://medium.com/
+#      name: medium
